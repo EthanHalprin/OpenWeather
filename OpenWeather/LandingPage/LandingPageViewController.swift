@@ -8,20 +8,19 @@
 import Foundation
 import UIKit
 
-
 class LandingPageViewController: UIViewController {
     
     @IBOutlet weak var textField: UITextField!
-
+    
     @IBAction func submitDidPress(_ sender: UIButton) {
 
-        guard let text = textField.text, text.count == 32 else {
+        guard let key = textField.text, key.count == 32 else {
             self.alertPopup(title: "Bad Key", message: "Please enter a valid 32-char key")
             return
         }
+        UserDefaults.standard.set(key, forKey: "OW_API_Key")
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let mainScreenViewController = storyboard.instantiateViewController(withIdentifier: "MainScreenViewController") as! MainScreenViewController
-        mainScreenViewController.apiKey = text
         self.navigationController?.pushViewController(mainScreenViewController, animated: true)
     }
 }

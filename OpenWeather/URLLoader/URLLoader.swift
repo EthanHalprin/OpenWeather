@@ -7,38 +7,44 @@
 
 import Foundation
 
-#if canImport(FoundationNetworking)
-import FoundationNetworking
-#endif
+struct URLLoader {
+    static let shared = URLLoader()
+    var apiKey: String!
 
-enum City: Int {
-    case jerusalem = 123
-    case telAviv = 293397
-    case haifa = 323
-    case eilat = 3432
-}
+    private init() {
+        if let key = UserDefaults.standard.string(forKey: "OW_API_Key") {
+            self.apiKey = key
+        }
+    }
 
-class URLLoader {
-    
-    func loadForecast(for city: City) {
-        //let semaphore = DispatchSemaphore (value: 0)
-        var request = URLRequest(url: URL(string: #"https://api.openweathermap.org/data/2.5/weather?id=\#(String(city.rawValue))&APPID=298b60e02f2991627d6b5a431f7c31f1"#)!,
+    func loadForecastData(for city: City, _ completionHandler: @escaping (Result<Forecast, Error>) -> Void ) {
+        
+        guard let key = self.apiKey else {
+            completionHandler(.failure(NetworkError.emptyData))
+            return
+        }
+        var request = URLRequest(url: URL(string: #"https://api.openweathermap.org/data/2.5/weather?id=\#(String(city.rawValue))&APPID=\#(key)"#)!,
                                  timeoutInterval: Double.infinity)
         request.httpMethod = "GET"
 
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
             print("\n\n===============================================================")
-            guard let data = data else {
-                print(String(describing: error))
-                //semaphore.signal()
+            guard error == nil else {
+                completionHandler(.failure(error!))
                 return
             }
-            print(String(data: data, encoding: .utf8)!)
+            guard let data = data else {
+                completionHandler(.failure(NetworkError.emptyData))
+                return
+            }
+            let jsonString = String(data: data, encoding: .utf8)!
+            let jsonData = jsonString.data(using: .utf8)!
+            let forecast = try! JSONDecoder().decode(Forecast.self, from: jsonData)
+            print("\(forecast)")
+            completionHandler(.success(forecast))
             print("===============================================================\n\n")
-            //semaphore.signal()
         }
 
         task.resume()
-        //semaphore.wait()
     }
 }

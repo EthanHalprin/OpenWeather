@@ -20,6 +20,9 @@
 		AA1567CA269C4D99007856B0 /* MainScreenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1567C9269C4D99007856B0 /* MainScreenViewController.swift */; };
 		AA1567CC269C4F6B007856B0 /* Forecast.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1567CB269C4F6B007856B0 /* Forecast.swift */; };
 		AA1567CF269C5081007856B0 /* URLLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1567CE269C5081007856B0 /* URLLoader.swift */; };
+		AA1567D1269C5CA7007856B0 /* City.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1567D0269C5CA7007856B0 /* City.swift */; };
+		AA1567D3269C5FCC007856B0 /* MainScreenViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1567D2269C5FCC007856B0 /* MainScreenViewModel.swift */; };
+		AA1567D5269C7263007856B0 /* NetworkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1567D4269C7263007856B0 /* NetworkError.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -59,6 +62,9 @@
 		AA1567C9269C4D99007856B0 /* MainScreenViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainScreenViewController.swift; sourceTree = "<group>"; };
 		AA1567CB269C4F6B007856B0 /* Forecast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Forecast.swift; sourceTree = "<group>"; };
 		AA1567CE269C5081007856B0 /* URLLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLLoader.swift; sourceTree = "<group>"; };
+		AA1567D0269C5CA7007856B0 /* City.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = City.swift; sourceTree = "<group>"; };
+		AA1567D2269C5FCC007856B0 /* MainScreenViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainScreenViewModel.swift; sourceTree = "<group>"; };
+		AA1567D4269C7263007856B0 /* NetworkError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkError.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -111,7 +117,7 @@
 			children = (
 				AA1567CD269C504D007856B0 /* URLLoader */,
 				AA1567C2269C4D8F007856B0 /* LandingPage */,
-				AA1567C5269C4D99007856B0 /* MainView */,
+				AA1567C5269C4D99007856B0 /* MainScreen */,
 				AA1567BF269C4D6D007856B0 /* CityForecast */,
 				AA156783269C25DD007856B0 /* AppDelegate.swift */,
 				AA156785269C25DD007856B0 /* SceneDelegate.swift */,
@@ -158,19 +164,20 @@
 			path = LandingPage;
 			sourceTree = "<group>";
 		};
-		AA1567C5269C4D99007856B0 /* MainView */ = {
+		AA1567C5269C4D99007856B0 /* MainScreen */ = {
 			isa = PBXGroup;
 			children = (
 				AA1567C7269C4D99007856B0 /* Model */,
 				AA1567C8269C4D99007856B0 /* View */,
 				AA1567C6269C4D99007856B0 /* ViewModel */,
 			);
-			path = MainView;
+			path = MainScreen;
 			sourceTree = "<group>";
 		};
 		AA1567C6269C4D99007856B0 /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
+				AA1567D2269C5FCC007856B0 /* MainScreenViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -194,6 +201,8 @@
 		AA1567CD269C504D007856B0 /* URLLoader */ = {
 			isa = PBXGroup;
 			children = (
+				AA1567D0269C5CA7007856B0 /* City.swift */,
+				AA1567D4269C7263007856B0 /* NetworkError.swift */,
 				AA1567CE269C5081007856B0 /* URLLoader.swift */,
 			);
 			path = URLLoader;
@@ -330,12 +339,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				AA1567C4269C4D8F007856B0 /* LandingPageViewController.swift in Sources */,
+				AA1567D3269C5FCC007856B0 /* MainScreenViewModel.swift in Sources */,
 				AA1567C1269C4D6D007856B0 /* CityForecastViewController.swift in Sources */,
+				AA1567D1269C5CA7007856B0 /* City.swift in Sources */,
 				AA1567CC269C4F6B007856B0 /* Forecast.swift in Sources */,
 				AA156784269C25DD007856B0 /* AppDelegate.swift in Sources */,
 				AA1567CF269C5081007856B0 /* URLLoader.swift in Sources */,
 				AA15678E269C25DD007856B0 /* OpenWeather.xcdatamodeld in Sources */,
 				AA156786269C25DD007856B0 /* SceneDelegate.swift in Sources */,
+				AA1567D5269C7263007856B0 /* NetworkError.swift in Sources */,
 				AA1567CA269C4D99007856B0 /* MainScreenViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
