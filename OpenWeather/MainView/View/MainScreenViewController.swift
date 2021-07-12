@@ -13,6 +13,7 @@ class MainScreenViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        URLLoader().loadForecast(for: City.telAviv)
     }
 }
 
