@@ -12,6 +12,9 @@ class ForecastViewCell: UICollectionViewCell {
     @IBOutlet weak var canvasView: UIView!
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var labelView: UILabel!
+    @IBOutlet weak var forecastView: UILabel!
+    @IBOutlet weak var temperatureView: UILabel!
+    
     
     override func awakeFromNib() {
         super.awakeFromNib()

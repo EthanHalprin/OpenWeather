@@ -14,7 +14,7 @@ class MainScreenViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        setup()
+        setupViewController()
     }
     
     override func viewDidLoad() {
@@ -30,7 +30,7 @@ class MainScreenViewController: UIViewController {
 
 extension MainScreenViewController {
     
-    fileprivate func setup() {
+    fileprivate func setupViewController() {
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "list.bullet"),
                                                             style: .plain,
                                                             target: self,
@@ -65,24 +65,21 @@ extension MainScreenViewController: UICollectionViewDataSource {
         cell.imageView.image = UIImage(named: imageName)
         cell.imageView.contentMode = .scaleAspectFit
         cell.labelView.text = String(describing: viewModel.temps[index])
-        cell.canvasView.setup(view: cell.canvasView)
+        cell.canvasView.decorate()
       
         return cell
         
     }
 }
 extension UIView {
-    
-    func setup(view : UIView){
-        
-        view.layer.cornerRadius = 2.0
-        view.layer.borderColor  =  UIColor.lightGray.cgColor
-        view.layer.borderWidth = 2.0
-        view.layer.shadowOpacity = 1.0
-        view.layer.shadowColor =  UIColor.clear.cgColor
-        view.layer.shadowRadius = 2.0
-        view.layer.shadowOffset = CGSize(width:3, height: 3)
-        view.layer.masksToBounds = true
-        
+    func decorate(){
+        self.layer.cornerRadius = 2.0
+        self.layer.borderColor  =  UIColor.lightGray.cgColor
+        self.layer.borderWidth = 2.0
+        self.layer.shadowOpacity = 1.0
+        self.layer.shadowColor =  UIColor.clear.cgColor
+        self.layer.shadowRadius = 2.0
+        self.layer.shadowOffset = CGSize(width:3, height: 3)
+        self.layer.masksToBounds = true
     }
 }

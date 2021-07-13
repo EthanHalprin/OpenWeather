@@ -14,7 +14,7 @@ class MainScreenViewModel {
     var pics = ["ta", "jr", "hf", "et"]
     let listFlowLayout = ListFlowLayout()
     let gridFlowLayout = GridFlowLayout()
-
+    var forecasts = [City: Forecast]()
     
     func loadForecast(for city: City, _ completion: @escaping (Forecast) -> Void) {
         URLLoader.shared.loadForecastData(for: city) { result in
