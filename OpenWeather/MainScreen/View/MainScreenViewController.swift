@@ -19,11 +19,14 @@ class MainScreenViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        viewModel.loadForecasts() { forecasts in
-            print("===== FORCAST TA ====================================")
-            dump(forecasts)
-            print("===== FORCAST TA ====================================")
+                
+        viewModel.loadForecasts { [unowned self] result in
+            switch result {
+            case .success( _):
+                print("Loaded \(self.viewModel.forecasts.count) forecasts successfully")
+            case .failure(let error):
+                print("ERROR: On loadForecasts - \(error.localizedDescription)")
+            }
         }
     }
 }

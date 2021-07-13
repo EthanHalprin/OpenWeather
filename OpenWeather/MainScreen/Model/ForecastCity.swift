@@ -16,7 +16,10 @@ struct ForecastCity: Codable {
     let main: Main
     let visibility: Int
     let wind: Wind
-    let rain, snow: Int?
+    //"rain": {
+    //  "1h": 0.15
+    //},
+    let rain, snow: [String: Double]?
     let clouds: Clouds
     let weather: [Weather]
 }

@@ -7,10 +7,9 @@
 
 import Foundation
 
-/// Source:  http://bulk.openweathermap.org/sample/
 enum City: Int {
-    case jerusalem = 6554238
+    case jerusalem = 281184
     case telAviv   = 293397
-    case haifa     = 294800
+    case haifa     = 294801
     case eilat     = 295277
 }

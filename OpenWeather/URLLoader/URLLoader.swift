@@ -34,6 +34,7 @@ struct URLLoader {
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
             
             print("\n\n===============================================================")
+            
             guard error == nil else {
                 completionHandler(.failure(error!))
                 return
