@@ -4,55 +4,53 @@
 //
 //  Created by Ethan on 12/07/2021.
 //
-//   let forecast = try? newJSONDecoder().decode(Forecast.self, from: jsonData)
-
+//   let forecastCity = try? newJSONDecoder().decode(ForecastCity.self, from: jsonData)
+//
 import Foundation
 
-// MARK: - Forecast
-struct Forecast: Codable {
+// MARK: - ForecastCity
+struct ForecastCity: Codable {
+    let id, dt: Int
+    let name: String
     let coord: Coord
-    let weather: [Weather]
-    let base: String
     let main: Main
     let visibility: Int
     let wind: Wind
+    let rain, snow: Int?
     let clouds: Clouds
-    let dt: Int
-    let sys: Sys
-    let timezone, id: Int
-    let name: String
-    let cod: Int
+    let weather: [Weather]
 }
 
 // MARK: - Clouds
 struct Clouds: Codable {
-    let all: Int
+    let today: Int
 }
 
 // MARK: - Coord
 struct Coord: Codable {
     let lon, lat: Double
+
+    enum CodingKeys: String, CodingKey {
+        case lon = "Lon"
+        case lat = "Lat"
+    }
 }
 
 // MARK: - Main
 struct Main: Codable {
     let temp, feelsLike, tempMin, tempMax: Double
-    let pressure, humidity: Int
+    let pressure, seaLevel, grndLevel, humidity: Int?
 
     enum CodingKeys: String, CodingKey {
         case temp
         case feelsLike = "feels_like"
         case tempMin = "temp_min"
         case tempMax = "temp_max"
-        case pressure, humidity
+        case pressure
+        case seaLevel = "sea_level"
+        case grndLevel = "grnd_level"
+        case humidity
     }
-}
-
-// MARK: - Sys
-struct Sys: Codable {
-    let type, id: Int
-    let country: String
-    let sunrise, sunset: Int
 }
 
 // MARK: - Weather
@@ -72,4 +70,3 @@ struct Wind: Codable {
     let speed: Double
     let deg: Int
 }
-

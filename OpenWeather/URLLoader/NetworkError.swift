@@ -11,4 +11,5 @@ enum NetworkError: Error {
     case keyBadOrMissing
     case badURL
     case emptyData
+    case noCitiesInRegion
 }

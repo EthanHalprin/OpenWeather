@@ -15,7 +15,6 @@ class ForecastViewCell: UICollectionViewCell {
     @IBOutlet weak var forecastView: UILabel!
     @IBOutlet weak var temperatureView: UILabel!
     
-    
     override func awakeFromNib() {
         super.awakeFromNib()
         imageView.layer.cornerRadius = 3

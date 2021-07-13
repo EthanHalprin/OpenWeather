@@ -14,13 +14,13 @@ class MainScreenViewModel {
     var pics = ["ta", "jr", "hf", "et"]
     let listFlowLayout = ListFlowLayout()
     let gridFlowLayout = GridFlowLayout()
-    var forecasts = [City: Forecast]()
+    var forecasts = [ForecastCity]()
     
-    func loadForecast(for city: City, _ completion: @escaping (Forecast) -> Void) {
-        URLLoader.shared.loadForecastData(for: city) { result in
+    func loadForecasts(_ completion: @escaping ([ForecastCity]) -> Void) {
+        URLLoader.shared.loadForecastData() { result in
             switch result {
-            case .success(let forecast):
-                completion(forecast)
+            case .success(let forecasts):
+                completion(forecasts)
             case .failure(let error):
                 print("ERROR: On loadForecast - \(error.localizedDescription)")
             }

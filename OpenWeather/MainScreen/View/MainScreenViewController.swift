@@ -20,11 +20,11 @@ class MainScreenViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-//        viewModel.loadForecast(for: .telAviv) { forecast in
-//            print("===== FORCAST TA ====================================")
-//            dump(forecast)
-//            print("===== FORCAST TA ====================================")
-//        }
+        viewModel.loadForecasts() { forecasts in
+            print("===== FORCAST TA ====================================")
+            dump(forecasts)
+            print("===== FORCAST TA ====================================")
+        }
     }
 }
 
@@ -53,9 +53,8 @@ extension MainScreenViewController {
 
 extension MainScreenViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return viewModel.pics.count
+        return viewModel.forecasts.count
     }
-    
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: ForecastViewCell.self), for: indexPath) as! ForecastViewCell
@@ -68,7 +67,6 @@ extension MainScreenViewController: UICollectionViewDataSource {
         cell.canvasView.decorate()
       
         return cell
-        
     }
 }
 extension UIView {
