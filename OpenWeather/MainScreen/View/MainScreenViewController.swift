@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import CoreData
 
 enum LoadingType {
     case database
@@ -21,6 +22,32 @@ class MainScreenViewController: UIViewController {
         super.viewDidLoad()
         setup()
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+      super.viewWillAppear(animated)
+      
+      //1
+      guard let appDelegate =
+        UIApplication.shared.delegate as? AppDelegate else {
+          return
+      }
+      
+      let managedContext =
+        appDelegate.persistentContainer.viewContext
+      
+      //2
+      let fetchRequest =
+        NSFetchRequest<NSManagedObject>(entityName: "ForecastPersist")
+      
+      //3
+      do {
+        self.viewModel.forecasts = try managedContext.fetch(fetchRequest)
+      } catch let error as NSError {
+        print("Could not fetch. \(error), \(error.userInfo)")
+      }
+ 
+    }
+
     
     override func viewWillDisappear(_ animated: Bool) {
         if currentReachabilityStatus == .notReachable {
@@ -41,7 +68,7 @@ extension MainScreenViewController {
 
         if currentReachabilityStatus == .notReachable {
             // Network Unavailable
-            load(via: .database)
+           // load(via: .database)
         } else {
             // Network Available
             load(via: .network)
@@ -76,7 +103,7 @@ extension MainScreenViewController {
         viewModel.isGridLayout = viewModel.isGridLayout ? false : true
         navigationItem.rightBarButtonItem!.image = viewModel.isGridLayout ? UIImage(systemName: "list.bullet") : UIImage(systemName: "square.grid.2x2")
         
-        UIView.animate(withDuration: 0.2) { [unowned self] () -> Void in
+        UIView.animate(withDuration: 0.5) { [unowned self] () -> Void in
             self.collectionView.collectionViewLayout.invalidateLayout()
             let chosenLayout = self.viewModel.isGridLayout ? self.viewModel.gridFlowLayout : self.viewModel.listFlowLayout
             self.collectionView.setCollectionViewLayout(chosenLayout, animated: true)
@@ -101,28 +128,13 @@ extension MainScreenViewController: UICollectionViewDataSource {
         cell.imageView.contentMode = .scaleAspectFit
         //---------------------------------------------------------------
         
-        if let title = viewModel.forecasts[index].cityName {
-            print(">>>>>>> title = \(title) >>>>>>>>>>>>>>>\n")
-            cell.cityLabel.text = title
+        if let title = viewModel.forecasts[index].value(forKeyPath: "cityName") as? String {
+            cell.city.text = title
         }
-        let temp = viewModel.forecasts[index].temperature
-        print(">>>>>>> temp = \(temp) >>>>>>>>>>>>>>>\n")
-        cell.temperatureLabel.text = String("\(temp)º")
-    
-        //cell.canvasView.decorate()
-      
+        if let temp = viewModel.forecasts[index].value(forKeyPath: "temperature") as? Double {
+            cell.temp.text = String("\(temp)º")
+        }
         return cell
     }
 }
-extension UIView {
-    func decorate(){
-        self.layer.cornerRadius = 2.0
-        self.layer.borderColor  =  UIColor.lightGray.cgColor
-        self.layer.borderWidth = 2.0
-        self.layer.shadowOpacity = 1.0
-        self.layer.shadowColor =  UIColor.clear.cgColor
-        self.layer.shadowRadius = 2.0
-        self.layer.shadowOffset = CGSize(width:3, height: 3)
-        self.layer.masksToBounds = true
-    }
-}
+

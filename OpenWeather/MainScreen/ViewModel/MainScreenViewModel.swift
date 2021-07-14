@@ -16,7 +16,7 @@ class MainScreenViewModel {
     var pics = ["ta", "jr", "hf", "et"]
     let listFlowLayout = ListFlowLayout()
     let gridFlowLayout = GridFlowLayout()
-    var forecasts = [ForecastPersist]()
+    var forecasts = [NSManagedObject]()  // ForecastPersist is a NSManagedObject deriviative
     let citiesCodes = [City.telAviv, City.jerusalem, City.haifa, City.eilat]
     let internetMonitor = NWPathMonitor()
     let internetQueue = DispatchQueue(label: "InternetMonitor")
@@ -62,32 +62,45 @@ class MainScreenViewModel {
             }
         }
         
-        DispatchQueue.main.sync {
-            let appDelegate = UIApplication.shared.delegate as! AppDelegate
-            let context = appDelegate.persistentContainer.viewContext
+       for city in cityForecastArr {
+            save(city)
 
-            for city in cityForecastArr {
+//            forecast.cityName = city.name
+//            forecast.feelsLike = city.main.feelsLike
+//            if let humidity = city.main.humidity {
+//                forecast.humidity = Int32(humidity)
+//            }
+//            if let pressure = city.main.pressure {
+//                forecast.pressure = Int32(pressure)
+//            }
+//            if let seaLevel = city.main.seaLevel {
+//                forecast.seaLevel = Int32(seaLevel)
+//            }
+//            forecast.temperature = city.main.temp
+//            forecast.weatherDescription = city.weather[0].weatherDescription
+//            forecast.windDirection = Int32(city.wind.deg)
+//            forecast.windSpeed  = city.wind.speed
+        }
+    }
+}
+    
+extension MainScreenViewModel {
+    func save(_ city: ForecastCity) {
 
-                let forecast = ForecastPersist(context: context)
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
 
-                forecast.cityName = city.name
-                forecast.feelsLike = city.main.feelsLike
-                if let humidity = city.main.humidity {
-                    forecast.humidity = Int32(humidity)
-                }
-                if let pressure = city.main.pressure {
-                    forecast.pressure = Int32(pressure)
-                }
-                if let seaLevel = city.main.seaLevel {
-                    forecast.seaLevel = Int32(seaLevel)
-                }
-                forecast.temperature = city.main.temp
-                forecast.weatherDescription = city.weather[0].weatherDescription
-                forecast.windDirection = Int32(city.wind.deg)
-                forecast.windSpeed  = city.wind.speed
-                
-                self.forecasts.append(forecast)
-            }
+        let managedContext = appDelegate.persistentContainer.viewContext
+        let entity = NSEntityDescription.entity(forEntityName: "ForecastPersist", in: managedContext)!
+        let forecastPersist = NSManagedObject(entity: entity, insertInto: managedContext)
+
+        forecastPersist.setValue(city.name, forKeyPath: "cityName")
+        forecastPersist.setValue(city.main.feelsLike, forKeyPath: "feelsLike")
+
+        do {
+            try managedContext.save()
+            self.forecasts.append(forecastPersist)
+        } catch let error as NSError {
+            print("Could not save. \(error), \(error.userInfo)")
         }
     }
 }

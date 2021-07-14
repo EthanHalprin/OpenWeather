@@ -10,11 +10,12 @@ import UIKit
 class ForecastViewCell: UICollectionViewCell {
   
     @IBOutlet weak var imageView: UIImageView!
-    @IBOutlet weak var cityLabel: UILabel!
-    @IBOutlet weak var temperatureLabel: UILabel!
+    @IBOutlet weak var city: UILabel!
+    @IBOutlet weak var temp: UILabel!
     
     
     override func awakeFromNib() {
         super.awakeFromNib()
+        temp.textColor = UIColor.blue
     }
 }

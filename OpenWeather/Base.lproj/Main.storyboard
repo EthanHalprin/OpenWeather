@@ -149,9 +149,9 @@
                                         </collectionViewCellContentView>
                                         <size key="customSize" width="191" height="190"/>
                                         <connections>
-                                            <outlet property="cityLabel" destination="gIC-LW-jgF" id="Bwe-ld-ybW"/>
+                                            <outlet property="city" destination="zqy-W4-UuS" id="8rX-A7-m6s"/>
                                             <outlet property="imageView" destination="ARh-tT-YNa" id="zfg-AT-0Sk"/>
-                                            <outlet property="temperatureLabel" destination="zqy-W4-UuS" id="xOc-U6-lOU"/>
+                                            <outlet property="temp" destination="gIC-LW-jgF" id="pvE-8X-e5y"/>
                                         </connections>
                                     </collectionViewCell>
                                 </cells>
