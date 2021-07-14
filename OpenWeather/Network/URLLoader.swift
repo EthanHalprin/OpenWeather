@@ -17,24 +17,28 @@ struct URLLoader {
         }
     }
     
-    /*
-     api.openweathermap.org/data/2.5/box/city?bbox=34.54736,29.50932,35.49168,33.05506,100&APPID=298b60e02f2991627d6b5a431f7c31f1
-     */
-
+    /// Initiate a region call to fetch all 4 cities - Israel's rect for that is:
+    ///
+    ///  33.05506, 34.54736---------------32.92478, 35.49168
+    ///       |                                    |
+    ///       |                                    |
+    ///       |                                    |
+    /// 29.50932, 34.22430----------------29.471465, 35.249387
+    ///
+    /// - Parameter completionHandler: completion returning Israel's cities forecasts only
     func loadForecastData(_ completionHandler: @escaping (Result<[ForecastCity], Error>) -> Void ) {
         
         guard let key = self.apiKey else {
             completionHandler(.failure(NetworkError.emptyData))
             return
         }
+
+        // [lon-left,lat-bottom,lon-right,lat-top]
         var request = URLRequest(url: URL(string: #"https://api.openweathermap.org/data/2.5/box/city?bbox=34.54736,29.50932,35.49168,33.05506,100&APPID=\#(key)"#)!,
                                  timeoutInterval: Double.infinity)
         request.httpMethod = "GET"
 
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
-            
-            print("\n\n===============================================================")
-            
             guard error == nil else {
                 completionHandler(.failure(error!))
                 return
@@ -47,14 +51,11 @@ struct URLLoader {
             let jsonString = String(data: data, encoding: .utf8)!
             let jsonData = jsonString.data(using: .utf8)!
             let forecastRegion = try! JSONDecoder().decode(ForecastRegion.self, from: jsonData)
-            print("\(forecastRegion)")
             guard forecastRegion.list.count > 0 else {
                 completionHandler(.failure(NetworkError.noCitiesInRegion))
                 return
             }
             completionHandler(.success(forecastRegion.list))
-
-            print("===============================================================\n\n")
         }
 
         task.resume()

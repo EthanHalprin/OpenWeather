@@ -7,7 +7,7 @@
 
 import UIKit
 
-
+// Required for intercepting tap
 protocol ViewTappedDelegate: AnyObject {
     func viewTapped(_ indexPath : IndexPath?)
 }
@@ -36,5 +36,4 @@ class ForecastViewCell: UICollectionViewCell, UIGestureRecognizerDelegate {
     @objc func handleTap(recognizer:UITapGestureRecognizer) {
         delegate?.viewTapped(self.indexPath)
     }
-
 }

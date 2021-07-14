@@ -18,15 +18,27 @@ enum LoadingType {
 
 class MainScreenViewModel {
     
+    // Layout
     var isGridLayout = true
     let listFlowLayout = ListFlowLayout()
     let gridFlowLayout = GridFlowLayout()
-    var forecasts = [NSManagedObject]()  // ForecastPersist is a NSManagedObject deriviative
-    let citiesCodes = [City.telAviv, City.jerusalem, City.haifa, City.eilat]
+    
+    // Managed Model Array (type will be ForecastPersist)
+    var forecasts = [NSManagedObject]()
+    
+    // Internet Monitor
     let internetMonitor = NWPathMonitor()
     let internetQueue = DispatchQueue(label: "InternetMonitor")
     private var hasConnectionPath = false
+    
+    // City codes auxillary
+    let citiesCodes = [City.telAviv, City.jerusalem, City.haifa, City.eilat]
 
+    
+    /// Loads forecasts by using Network call or Core Data (depened what 'via' is)
+    /// - Parameters:
+    ///   - via: Where to load from
+    ///   - completionHandler: completion carrying Result
     func loadForecasts(via: LoadingType, _ completionHandler: @escaping (Result<Bool, Error>) -> Void) {
         switch via {
         case .database:
@@ -60,14 +72,15 @@ class MainScreenViewModel {
 
 extension MainScreenViewModel {
     
+    ///
+    /// Put codes in hashMap for faster extraction O(n):
+    ///
+    /// We will lookup each forecast in this hashMap rather
+    /// than lookup each city code in all forecastsInRegion array each
+    /// time. This way the forecastsInRegion array is enumerated only once.
+    ///
+    /// - Parameter forecastsInRegion: All forecast in region to select from
     fileprivate func storeSubsetCities(in forecastsInRegion: [ForecastCity]) {
-        //
-        // Put codes in hashMap for faster extraction O(n):
-        //
-        // We will lookup each forecast in this hashMap rather
-        // than lookup each city code in all forecastsInRegion array each
-        // time. This way the forecastsInRegion array is enumerated only once.
-        //
         var codesHashMap = [Int: Int]()
         for code in citiesCodes {
             codesHashMap[code.rawValue] = 1 // arbitrary
@@ -91,6 +104,7 @@ extension MainScreenViewModel {
         }
     }
     
+    /// Store in DB and in memory
     fileprivate func persist(_ city: ForecastCity) {
         
         var managedViewContext: NSManagedObjectContext?
@@ -138,36 +152,13 @@ extension MainScreenViewModel {
             if let fetched = fetchedObject {
                 forecasts.append(fetched)
             }
-//            if let fetched = fetchedObject {
-//                var found = false
-//                for (i, forecast) in self.forecasts.enumerated() {
-//                    if (forecast as! ForecastPersist).cityName == (fetched as! ForecastPersist).cityName {
-//                        update(index: i, with: (fetched as! ForecastPersist))
-//                        found = true
-//                        break
-//                    }
-//                }
-//                if !found {
-//                    forecasts.append(fetched)
-//                }
-//            }
         }
         catch {
             print("Could not save. \(error)")
         }
     }
 
-    fileprivate func update(index: Int, with input: ForecastPersist) {
-        (forecasts[index] as! ForecastPersist).feelsLike = input.feelsLike
-        (forecasts[index] as! ForecastPersist).humidity = input.humidity
-        (forecasts[index] as! ForecastPersist).pressure = input.pressure
-        (forecasts[index] as! ForecastPersist).seaLevel = input.seaLevel
-        (forecasts[index] as! ForecastPersist).temperature = input.temperature
-        (forecasts[index] as! ForecastPersist).weatherDescription = input.weatherDescription
-        (forecasts[index] as! ForecastPersist).windDirection = input.windDirection
-        (forecasts[index] as! ForecastPersist).windSpeed = input.windSpeed
-    }
-    
+    /// Add new entity to DB and in memory
     fileprivate func add(_ city: ForecastCity) {
 
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }

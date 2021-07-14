@@ -14,7 +14,7 @@ class LandingPageViewController: UIViewController {
     
     @IBAction func submitDidPress(_ sender: UIButton) {
         if currentReachabilityStatus == .notReachable {
-            // Network Unavailable
+            // Network Unavailable - Alert User and suggest offline Databse
             self.alertPopup(title: "Internet Issue",
                             message: "No Internet Connection. Supply cellular or Wi-Fi connection or watch offline last forecasts",
                             extraButtonTitle: "Go Offline",
