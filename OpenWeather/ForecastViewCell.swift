@@ -8,20 +8,13 @@
 import UIKit
 
 class ForecastViewCell: UICollectionViewCell {
-
-    @IBOutlet weak var canvasView: UIView!
+  
     @IBOutlet weak var imageView: UIImageView!
-    @IBOutlet weak var labelView: UILabel!
-    @IBOutlet weak var forecastView: UILabel!
-    @IBOutlet weak var temperatureView: UILabel!
+    @IBOutlet weak var cityLabel: UILabel!
+    @IBOutlet weak var temperatureLabel: UILabel!
+    
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        imageView.layer.cornerRadius = 3
-        imageView.layer.masksToBounds = true
-        labelView.layer.cornerRadius = 3
-        labelView.layer.masksToBounds = true
-        canvasView.layer.cornerRadius = 3
-        canvasView.layer.masksToBounds = true
     }
 }

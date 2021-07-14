@@ -7,41 +7,71 @@
 
 import UIKit
 
+enum LoadingType {
+    case database
+    case network
+}
+
 class MainScreenViewController: UIViewController {
 
     @IBOutlet weak var collectionView: UICollectionView!
     var viewModel = MainScreenViewModel()
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        setupViewController()
-    }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-                
-        viewModel.loadForecasts { [unowned self] result in
-            switch result {
-            case .success( _):
-                print("Loaded \(self.viewModel.forecasts.count) forecasts successfully")
-            case .failure(let error):
-                print("ERROR: On loadForecasts - \(error.localizedDescription)")
-            }
+        setup()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        if currentReachabilityStatus == .notReachable {
+            //CR - save
         }
     }
 }
 
 extension MainScreenViewController {
-    
-    fileprivate func setupViewController() {
+    fileprivate func setup() {
+        
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "list.bullet"),
                                                             style: .plain,
                                                             target: self,
                                                             action: #selector(layoutToggleTapped))
         
         collectionView.collectionViewLayout = viewModel.gridFlowLayout
+
+        if currentReachabilityStatus == .notReachable {
+            // Network Unavailable
+            load(via: .database)
+        } else {
+            // Network Available
+            load(via: .network)
+        }
     }
-    
+
+    fileprivate func load(via: LoadingType) {
+
+        switch via {
+        case .database:
+            //CR - setup
+            break
+        
+        case .network:
+            self.viewModel.loadForecasts { [unowned self] result in
+                switch result {
+                case .success( _):
+                    print("Extracted \(self.viewModel.forecasts.count) forecasts from network load")
+                    DispatchQueue.main.async {
+                        self.collectionView.reloadData()
+                    }
+                case .failure(let error):
+                    print("ERROR: On loadForecasts - \(error.localizedDescription)")
+                }
+            }
+        }
+    }
+}
+
+extension MainScreenViewController {
     @objc func layoutToggleTapped() {
         viewModel.isGridLayout = viewModel.isGridLayout ? false : true
         navigationItem.rightBarButtonItem!.image = viewModel.isGridLayout ? UIImage(systemName: "list.bullet") : UIImage(systemName: "square.grid.2x2")
@@ -60,14 +90,26 @@ extension MainScreenViewController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: ForecastViewCell.self), for: indexPath) as! ForecastViewCell
         
-        let index = indexPath.row % viewModel.pics.count
+        let index = indexPath.row % viewModel.forecasts.count
+
+        //----ImageView HARDCODED----------------------------------------
         let imageName = viewModel.pics[index]
         cell.imageView.image = UIImage(named: imageName)
         cell.imageView.contentMode = .scaleAspectFit
-        cell.labelView.text = String(describing: viewModel.temps[index])
-        cell.canvasView.decorate()
+        //---------------------------------------------------------------
+        
+        if let title = viewModel.forecasts[index].cityName {
+            print(">>>>>>> title = \(title) >>>>>>>>>>>>>>>\n")
+            cell.cityLabel.text = title
+        }
+        let temp = viewModel.forecasts[index].temperature
+        print(">>>>>>> temp = \(temp) >>>>>>>>>>>>>>>\n")
+        cell.temperatureLabel.text = String("\(temp)º")
+    
+        //cell.canvasView.decorate()
       
         return cell
     }
