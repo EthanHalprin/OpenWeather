@@ -80,8 +80,22 @@ extension MainScreenViewController: UICollectionViewDataSource {
         }
         if let temp = viewModel.forecasts[index].value(forKeyPath: "temperature") as? Double {
             cell.temp.text = String("\(temp)º")
+            let backgroundColor = self.adjustColor(temp)
+            cell.backgroundColor = backgroundColor
         }
         return cell
     }
+    
+    fileprivate func adjustColor(_ temp: Double) -> UIColor {
+        switch temp {
+            case ..<0: return UIColor.systemBlue
+            case 0..<19: return UIColor.systemTeal
+            case 19..<26: return UIColor.systemYellow
+            case 26..<35: return UIColor.systemOrange
+            case 35..<60: return UIColor.systemRed
+            default: return UIColor.white
+        }
+    }
+
 }
 

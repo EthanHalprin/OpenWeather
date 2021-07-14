@@ -13,9 +13,11 @@ class ForecastViewCell: UICollectionViewCell {
     @IBOutlet weak var city: UILabel!
     @IBOutlet weak var temp: UILabel!
     
-    
     override func awakeFromNib() {
         super.awakeFromNib()
-        temp.textColor = UIColor.blue
+        self.layer.borderWidth = 1.5
+        self.temp.font = UIFont.boldSystemFont(ofSize: 12.0)
+        self.layer.borderColor = UIColor.black.cgColor
     }
+    
 }
