@@ -19,7 +19,6 @@ enum LoadingType {
 class MainScreenViewModel {
     
     var isGridLayout = true
-    var pics = ["ta", "jr", "hf", "et"]
     let listFlowLayout = ListFlowLayout()
     let gridFlowLayout = GridFlowLayout()
     var forecasts = [NSManagedObject]()  // ForecastPersist is a NSManagedObject deriviative

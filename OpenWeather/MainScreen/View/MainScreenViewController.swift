@@ -73,14 +73,10 @@ extension MainScreenViewController: UICollectionViewDataSource {
         
         let index = indexPath.row % viewModel.forecasts.count
 
-        //----ImageView HARDCODED----------------------------------------
-        let imageName = viewModel.pics[index]
-        cell.imageView.image = UIImage(named: imageName)
-        cell.imageView.contentMode = .scaleAspectFit
-        //---------------------------------------------------------------
-        
         if let title = viewModel.forecasts[index].value(forKeyPath: "cityName") as? String {
             cell.city.text = title
+            cell.imageView.image = UIImage(named: title)
+            cell.imageView.contentMode = .scaleAspectFit
         }
         if let temp = viewModel.forecasts[index].value(forKeyPath: "temperature") as? Double {
             cell.temp.text = String("\(temp)º")
