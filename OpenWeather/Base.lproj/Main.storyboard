@@ -23,14 +23,17 @@
                                 <color key="textColor" systemColor="systemOrangeColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="749" image="Weather" translatesAutoresizingMaskIntoConstraints="NO" id="RsT-GQ-rjS">
+                                <rect key="frame" x="70.5" y="222" width="273" height="175.5"/>
+                            </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Please provide API key" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sjp-ka-JmZ">
-                                <rect key="frame" x="41.5" y="416" width="331" height="23"/>
+                                <rect key="frame" x="41.5" y="463.5" width="331" height="23"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="19"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="298b60e02f2991627d6b5a431f7c31f1" borderStyle="roundedRect" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="An9-dX-EgM" userLabel="API Key Text Field">
-                                <rect key="frame" x="41.5" y="449" width="331" height="34"/>
+                                <rect key="frame" x="41.5" y="496.5" width="331" height="34"/>
                                 <color key="backgroundColor" systemColor="systemOrangeColor"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
@@ -49,13 +52,17 @@
                         <constraints>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="DWd-ef-cGb" secondAttribute="bottom" constant="20" id="7rx-LU-avK"/>
                             <constraint firstItem="sjp-ka-JmZ" firstAttribute="width" secondItem="8bC-Xf-vdC" secondAttribute="width" multiplier="0.8" id="Au4-El-Ssh"/>
+                            <constraint firstItem="sjp-ka-JmZ" firstAttribute="top" secondItem="RsT-GQ-rjS" secondAttribute="bottom" constant="66" id="BCy-jd-HPZ"/>
                             <constraint firstItem="lv0-gK-0kQ" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="Hfe-1T-WJL"/>
                             <constraint firstItem="lv0-gK-0kQ" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="15" id="KFj-tR-EQE"/>
+                            <constraint firstItem="RsT-GQ-rjS" firstAttribute="top" secondItem="lv0-gK-0kQ" secondAttribute="bottom" constant="82" id="Mc0-Me-Bgm"/>
                             <constraint firstItem="An9-dX-EgM" firstAttribute="top" secondItem="sjp-ka-JmZ" secondAttribute="bottom" constant="10" id="P66-dL-aiY"/>
+                            <constraint firstItem="RsT-GQ-rjS" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="RD5-dk-oVa"/>
+                            <constraint firstItem="RsT-GQ-rjS" firstAttribute="width" secondItem="8bC-Xf-vdC" secondAttribute="width" multiplier="0.66" id="UwI-Xa-fam"/>
                             <constraint firstItem="An9-dX-EgM" firstAttribute="width" secondItem="sjp-ka-JmZ" secondAttribute="width" id="WTA-bt-R0t"/>
                             <constraint firstItem="DWd-ef-cGb" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="abN-Q9-6PO"/>
                             <constraint firstItem="sjp-ka-JmZ" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="kZW-IO-cRv"/>
-                            <constraint firstItem="sjp-ka-JmZ" firstAttribute="centerY" secondItem="6Tk-OE-BBY" secondAttribute="centerY" multiplier="0.9" id="mcU-Tb-YbD"/>
+                            <constraint firstItem="sjp-ka-JmZ" firstAttribute="centerY" secondItem="6Tk-OE-BBY" secondAttribute="centerY" id="mcU-Tb-YbD"/>
                             <constraint firstItem="An9-dX-EgM" firstAttribute="centerX" secondItem="sjp-ka-JmZ" secondAttribute="centerX" id="nje-GB-6Zm"/>
                         </constraints>
                     </view>
@@ -367,6 +374,7 @@
         </scene>
     </scenes>
     <resources>
+        <image name="Weather" width="512" height="512"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
