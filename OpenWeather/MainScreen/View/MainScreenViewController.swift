@@ -6,93 +6,39 @@
 //
 
 import UIKit
-import CoreData
-
-enum LoadingType {
-    case database
-    case network
-}
 
 class MainScreenViewController: UIViewController {
 
     @IBOutlet weak var collectionView: UICollectionView!
+    
     var viewModel = MainScreenViewModel()
 
     override func viewDidLoad() {
         super.viewDidLoad()
         setup()
     }
-    
-    override func viewWillAppear(_ animated: Bool) {
-      super.viewWillAppear(animated)
-      
-      //1
-      guard let appDelegate =
-        UIApplication.shared.delegate as? AppDelegate else {
-          return
-      }
-      
-      let managedContext =
-        appDelegate.persistentContainer.viewContext
-      
-      //2
-      let fetchRequest =
-        NSFetchRequest<NSManagedObject>(entityName: "ForecastPersist")
-      
-      //3
-      do {
-        self.viewModel.forecasts = try managedContext.fetch(fetchRequest)
-      } catch let error as NSError {
-        print("Could not fetch. \(error), \(error.userInfo)")
-      }
- 
-    }
-
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        if currentReachabilityStatus == .notReachable {
-            //CR - save
-        }
-    }
 }
 
 extension MainScreenViewController {
     fileprivate func setup() {
-        
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "list.bullet"),
                                                             style: .plain,
                                                             target: self,
                                                             action: #selector(layoutToggleTapped))
         
         collectionView.collectionViewLayout = viewModel.gridFlowLayout
-
-        if currentReachabilityStatus == .notReachable {
-            // Network Unavailable
-           // load(via: .database)
-        } else {
-            // Network Available
-            load(via: .network)
-        }
-    }
-
-    fileprivate func load(via: LoadingType) {
-
-        switch via {
-        case .database:
-            //CR - setup
-            break
         
-        case .network:
-            self.viewModel.loadForecasts { [unowned self] result in
-                switch result {
-                case .success( _):
-                    print("Extracted \(self.viewModel.forecasts.count) forecasts from network load")
-                    DispatchQueue.main.async {
-                        self.collectionView.reloadData()
-                    }
-                case .failure(let error):
-                    print("ERROR: On loadForecasts - \(error.localizedDescription)")
+        let loaderTarget: LoadingType = currentReachabilityStatus == .notReachable ? .database : .network
+        
+        self.viewModel.loadForecasts(via: loaderTarget) { [unowned self] result in
+            switch result {
+            case .success( _):
+                print("Extracted \(self.viewModel.forecasts.count) forecasts")
+                DispatchQueue.main.async {
+                    self.collectionView.reloadData()
                 }
+            case .failure(let error):
+                print("ERROR: On loadForecasts - \(error.localizedDescription)")
             }
         }
     }
@@ -118,7 +64,12 @@ extension MainScreenViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: ForecastViewCell.self), for: indexPath) as! ForecastViewCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: ForecastViewCell.self),
+                                                      for: indexPath) as! ForecastViewCell
+        
+        guard viewModel.forecasts.count <= 4 else {
+            fatalError("++++ Duplicates in DB ++++++++++++++++++++++++++++++")
+        }
         
         let index = indexPath.row % viewModel.forecasts.count
 

@@ -10,6 +10,12 @@ import Network
 import CoreData
 import UIKit
 
+
+enum LoadingType {
+    case database
+    case network
+}
+
 class MainScreenViewModel {
     
     var isGridLayout = true
@@ -22,21 +28,40 @@ class MainScreenViewModel {
     let internetQueue = DispatchQueue(label: "InternetMonitor")
     private var hasConnectionPath = false
 
-
-    func loadForecasts(_ completionHandler: @escaping (Result<Bool, Error>) -> Void) {
-        URLLoader.shared.loadForecastData() { [weak self] result in
-            switch result {
-            case .success(let forecastsInRegion):
-                guard let strongSelf = self else { return }
-                strongSelf.extractCities(forecastsInRegion)
-                completionHandler(.success(true))
-            case .failure(let error):
-                completionHandler(.failure(error))
+    func loadForecasts(via: LoadingType, _ completionHandler: @escaping (Result<Bool, Error>) -> Void) {
+        switch via {
+        case .database:
+            DispatchQueue.main.async {
+                guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
+                let managedContext = appDelegate.persistentContainer.viewContext
+                let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "ForecastPersist")
+                do {
+                    self.forecasts = try managedContext.fetch(fetchRequest)
+                    completionHandler(.success(true))
+                } catch let error as NSError {
+                    print("Could not fetch. \(error), \(error.userInfo)")
+                    completionHandler(.failure(error))
+                }
+            }
+        case .network:
+            self.forecasts.removeAll()
+            URLLoader.shared.loadForecastData() { [weak self] result in
+                switch result {
+                case .success(let forecastsInRegion):
+                    guard let strongSelf = self else { return }
+                    strongSelf.storeSubsetCities(in: forecastsInRegion)
+                    completionHandler(.success(true))
+                case .failure(let error):
+                    completionHandler(.failure(error))
+                }
             }
         }
     }
+}
+
+extension MainScreenViewModel {
     
-    fileprivate func extractCities(_ forecastsInRegion: [ForecastCity]) {
+    fileprivate func storeSubsetCities(in forecastsInRegion: [ForecastCity]) {
         //
         // Put codes in hashMap for faster extraction O(n):
         //
@@ -62,39 +87,110 @@ class MainScreenViewModel {
             }
         }
         
-       for city in cityForecastArr {
-            save(city)
-
-//            forecast.cityName = city.name
-//            forecast.feelsLike = city.main.feelsLike
-//            if let humidity = city.main.humidity {
-//                forecast.humidity = Int32(humidity)
-//            }
-//            if let pressure = city.main.pressure {
-//                forecast.pressure = Int32(pressure)
-//            }
-//            if let seaLevel = city.main.seaLevel {
-//                forecast.seaLevel = Int32(seaLevel)
-//            }
-//            forecast.temperature = city.main.temp
-//            forecast.weatherDescription = city.weather[0].weatherDescription
-//            forecast.windDirection = Int32(city.wind.deg)
-//            forecast.windSpeed  = city.wind.speed
+        for city in cityForecastArr {
+            persist(city)
         }
     }
-}
     
-extension MainScreenViewModel {
-    func save(_ city: ForecastCity) {
+    fileprivate func persist(_ city: ForecastCity) {
+        
+        var managedViewContext: NSManagedObjectContext?
+        
+        DispatchQueue.main.sync {
+            guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
+            managedViewContext = appDelegate.persistentContainer.viewContext
+        }
+        guard let managedContext = managedViewContext else {
+            print("Error: Could not create NSManagedObjectContext")
+            return
+        }
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "ForecastPersist")
+        fetchRequest.predicate = NSPredicate(format: "cityName = %@" ,city.name)
+
+        var fetchedObject: NSManagedObject?
+        
+        do {
+            let fetchResults = try managedContext.fetch(fetchRequest) as? [NSManagedObject]
+            guard let results = fetchResults, results.count == 1 else {
+                self.add(city)
+                return
+            }
+            results[0].setValue(city.main.feelsLike, forKey: "feelsLike")
+            if let humidity = city.main.humidity {
+                results[0].setValue(Int32(humidity), forKey: "humidity")
+            }
+            if let pressure = city.main.pressure {
+                results[0].setValue(Int32(pressure), forKey: "pressure")
+            }
+            if let seaLevel = city.main.seaLevel {
+                results[0].setValue(Int32(seaLevel), forKey: "seaLevel")
+            }
+            results[0].setValue(city.main.temp, forKey: "temperature")
+            results[0].setValue(city.weather[0].weatherDescription, forKey: "weatherDescription")
+            results[0].setValue(Int32(city.wind.deg), forKey: "windDirection")
+            results[0].setValue(city.wind.speed, forKey: "windSpeed")
+            fetchedObject = results[0]
+        } catch {
+            print("Fetch Failed: \(error)")
+        }
+
+        do {
+            try managedContext.save()
+            if let fetched = fetchedObject {
+                forecasts.append(fetched)
+            }
+//            if let fetched = fetchedObject {
+//                var found = false
+//                for (i, forecast) in self.forecasts.enumerated() {
+//                    if (forecast as! ForecastPersist).cityName == (fetched as! ForecastPersist).cityName {
+//                        update(index: i, with: (fetched as! ForecastPersist))
+//                        found = true
+//                        break
+//                    }
+//                }
+//                if !found {
+//                    forecasts.append(fetched)
+//                }
+//            }
+        }
+        catch {
+            print("Could not save. \(error)")
+        }
+    }
+
+    fileprivate func update(index: Int, with input: ForecastPersist) {
+        (forecasts[index] as! ForecastPersist).feelsLike = input.feelsLike
+        (forecasts[index] as! ForecastPersist).humidity = input.humidity
+        (forecasts[index] as! ForecastPersist).pressure = input.pressure
+        (forecasts[index] as! ForecastPersist).seaLevel = input.seaLevel
+        (forecasts[index] as! ForecastPersist).temperature = input.temperature
+        (forecasts[index] as! ForecastPersist).weatherDescription = input.weatherDescription
+        (forecasts[index] as! ForecastPersist).windDirection = input.windDirection
+        (forecasts[index] as! ForecastPersist).windSpeed = input.windSpeed
+    }
+    
+    fileprivate func add(_ city: ForecastCity) {
 
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
-
         let managedContext = appDelegate.persistentContainer.viewContext
         let entity = NSEntityDescription.entity(forEntityName: "ForecastPersist", in: managedContext)!
         let forecastPersist = NSManagedObject(entity: entity, insertInto: managedContext)
 
         forecastPersist.setValue(city.name, forKeyPath: "cityName")
         forecastPersist.setValue(city.main.feelsLike, forKeyPath: "feelsLike")
+        if let humidity = city.main.humidity {
+            forecastPersist.setValue(Int32(humidity), forKeyPath: "humidity")
+        }
+        if let pressure = city.main.pressure {
+            forecastPersist.setValue(Int32(pressure), forKeyPath: "pressure")
+        }
+        if let seaLevel = city.main.seaLevel {
+            forecastPersist.setValue(Int32(seaLevel), forKeyPath: "seaLevel")
+        }
+        forecastPersist.setValue(city.main.temp, forKeyPath: "temperature")
+        forecastPersist.setValue(city.weather[0].weatherDescription, forKeyPath: "weatherDescription")
+        forecastPersist.setValue(Int32(city.wind.deg), forKeyPath: "windDirection")
+        forecastPersist.setValue(city.wind.speed, forKeyPath: "windSpeed")
 
         do {
             try managedContext.save()
