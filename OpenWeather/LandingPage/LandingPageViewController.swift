@@ -8,6 +8,10 @@
 import Foundation
 import UIKit
 
+class UserDefaultsKey {
+    static let shared = "OW_API_Key"
+}
+
 class LandingPageViewController: UIViewController {
     
     @IBOutlet weak var textField: UITextField!
@@ -29,8 +33,15 @@ class LandingPageViewController: UIViewController {
                 self.alertPopup(title: "API Key Issue", message: "Please enter a valid 32-char key")
                 return
             }
-            UserDefaults.standard.set(key, forKey: "OW_API_Key")
+            UserDefaults.standard.set(key, forKey: UserDefaultsKey.shared)
             pushMainViewController()
+        }
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        if let apiKey = UserDefaults.standard.string(forKey: UserDefaultsKey.shared) {
+            textField.text = apiKey
         }
     }
 }

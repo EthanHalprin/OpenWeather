@@ -12,7 +12,7 @@ struct URLLoader {
     var apiKey: String!
 
     private init() {
-        if let key = UserDefaults.standard.string(forKey: "OW_API_Key") {
+        if let key = UserDefaults.standard.string(forKey: UserDefaultsKey.shared) {
             self.apiKey = key
         }
     }
