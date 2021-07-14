@@ -21,6 +21,8 @@ class MainScreenViewController: UIViewController {
 
 extension MainScreenViewController {
     fileprivate func setup() {
+        collectionView.isUserInteractionEnabled = true
+
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "list.bullet"),
                                                             style: .plain,
                                                             target: self,
@@ -67,9 +69,8 @@ extension MainScreenViewController: UICollectionViewDataSource {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: ForecastViewCell.self),
                                                       for: indexPath) as! ForecastViewCell
         
-        guard viewModel.forecasts.count <= 4 else {
-            fatalError("++++ Duplicates in DB ++++++++++++++++++++++++++++++")
-        }
+        cell.delegate = self
+        cell.indexPath = indexPath
         
         let index = indexPath.row % viewModel.forecasts.count
 
@@ -96,6 +97,17 @@ extension MainScreenViewController: UICollectionViewDataSource {
             default: return UIColor.white
         }
     }
-
 }
 
+extension MainScreenViewController : ViewTappedDelegate {
+    func viewTapped(_ indexPath : IndexPath?) {
+        if let row = indexPath?.row {
+            let index = row % viewModel.forecasts.count
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            let cityForecastViewController = storyboard.instantiateViewController(withIdentifier: "CityForecastViewController") as! CityForecastViewController
+            cityForecastViewController.forecast = viewModel.forecasts[index] as! ForecastPersist
+            self.navigationController?.pushViewController(cityForecastViewController, animated: true)
+
+        }
+   }
+}
